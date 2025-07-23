@@ -1,14 +1,12 @@
 ;;; outli.el --- Org-like code outliner  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2022-2024
+;; Copyright (C) 2022-2025
 
 ;; Author: J.D. Smith <jdtsmith@gmail.com>
 ;; URL: https://github.com/jdtsmith/outli
 ;; Package-Requires: ((emacs "27.1"))
-;; Version: 0.2.3
+;; Version: 0.2.4
 ;; Keywords: convenience, outlines, Org
-
-;;; License:
 
 ;; outli is free software: you can redistribute it
 ;; and/or modify it under the terms of the GNU General Public License
