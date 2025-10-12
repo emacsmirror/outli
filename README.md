@@ -29,7 +29,7 @@ You should probably not enable `outli` in `org-mode` (which by default is preven
 
 # Customization
 ## Headline style
-The main variable to customize is `outli-heading-config`, where you can set the _stem_ and _repeat char_, and influence the styling, including whether to style the stem and repeat chars the same, whether to include the overline, or whether to omit styling altogether.  Note that the `t` member of this alist is the default used for all modes whih are not explicitly specified.
+The main variable to customize is `outli-heading-config`, where you can set the _stem_ and _repeat char_, and influence the styling, including whether to style the stem and repeat chars the same, whether to include the overline, or whether to omit styling altogether.  Note that the `t` member of this alist is the default used for all modes which are not explicitly specified.
 
 Configured defaults are:
 
@@ -65,7 +65,7 @@ Try `reveal-mode`; see below.
 # FAQ
 - **How does this relate to outline-minor-mode?**
  
-  `outli` is mostly a convenient wrapper around functionality that is already built-in to outline, adding a few things like `narrow-to-subtree` and `insert-heading-respect-content` (ala org). And of course the speed-key bindings, automatic comments-as-header patterns, and styling.
+  `outli` is mostly a convenient wrapper around functionality that is built-in to `outline-mode`, adding a few things like `narrow-to-subtree` and `insert-heading-respect-content` (ala `org-mode`). And of course the speed-key bindings, automatic comments-as-header patterns, and styling.
 - **How does this relate to outshine?**
 
   Mostly just conceptually.  Outshine also provides (different) speed keys, for example.  And a lot more, much of which isn't as relevant to modern emacs.  Since it builds more directly on the built-in capabilities of outline-minor-mode, `outli` is a _much_ smaller and simpler package. 
@@ -86,19 +86,19 @@ Try `reveal-mode`; see below.
     `(MAJOR-MODE . nil)` to explicitly prevent `outli` from running in this mode.
 	
    I recommend using the customize interface to configure `outli`: `M-x customize-group outli`.  But it may help to know:
-    - `MAJOR-MODE`: A symbol for a major mode, or parent mode from which the current mode inherits, like `'text-mode` (note: omit the single apostrophe in the customize interface: it knows it's a symbol).  A value of `t` is used to specify the default.
-    - `STEM`: A string like `"# "`.  The fixed "stem" of the headline pattern (omit quotes in customize interface).  Can also be an elisp expression which evaluates to a string.
+    - `MAJOR-MODE`: A symbol for a major mode, or parent mode from which the current mode inherits, like `'text-mode` (note: omit the single apostrophe in the customize interface: it knows it's a symbol).  A value of `t` is used to specify the default config.
+    - `STEM`: A string like `"# "`.  The fixed "stem" of the headline pattern (omit quotes in the customize interface).  Can also be an elisp expression which evaluates to a string.
     - `REPEAT-CHAR`: A _character_ like `?*`.  The repeating character which specifies the level of a headline (again: no `?` needed in customize, just type the character).  Can also be an elisp expression which evaluates to a character. 
-    - `STYLE`: A style flag.  `nil` for default (maximum) styling, the symbol `none` for no special styling of headlines, and `t` for matched styling between stem and repeat char.  Can be omitted (defaults to `nil`).  See also `outli-default-style`. 
+    - `STYLE`: A style flag (symbol).  `nil` for default (maximum) styling, the symbol `none` for no special styling of headlines, and `t` for matched styling between stem and repeat char.  Can be omitted (defaults to `nil`).  See also `outli-default-style`. 
     - `NO-BAR`: A flag for the overline bar.  If non-`nil`, omit the overline.  Can be omitted (defaults to `nil`).  See also `outli-default-nobar`. 
 
 # Tips
 - You can use arbitrary expressions for the stem and repeat chars; they'll get evaluated at run-time.
 - It's useful to target high-level modes like `prog-mode` or `text-mode`, from which many modes inherit (see [mode-minder](https://github.com/jdtsmith/mode-minder) to get a list of your major mode hierarchy).
 - Try out the `h` key at headline start: it folds everything up to be no deeper than the current header's level. 
-- To prevent `outli` from being enabled in a given mode (or family of derived modes), just include `(MODE . nil)` in `outli-heading-config`.  By default, `org-mode` is excluded in this way.
+- To prevent `outli` from being enabled in a given mode (or family of derived modes), just include `(MODE . nil)` in `outli-heading-config`.  By default, `org-mode` is excluded in this way (since it has its own styling system).
 - Some emacs tools like `isearch` are smart about folding/unfolding text as you navigate through a buffer with them.  But not all.  To fix this, you can consider enabling `reveal-mode` in buffers where you use `outli`, then tools like `xref`, etc. will reveal folded targets, re-hiding them when you navigate away.
-- I recommend `consult-org-heading` and/or `consult-outline` for quickly browsing outli headings.  You can even combine these like:
+- I recommend `consult-org-heading` and/or `consult-outline` for quickly browsing `outli` headings.  You can even combine these into one command, like:
    ```elisp
    (defun my/consult-org-heading-or-outline ()
     (interactive)
@@ -118,5 +118,5 @@ Try `reveal-mode`; see below.
 - `outline-minor-mode`: The built-in minor mode for outlining documents on which `outli` builds. 
 - [orgmode](https://orgmode.org): The do-everything outliner mode.
 - [outshine](https://github.com/alphapapa/outshine): A feature-full `outline-minor-mode` enhancement from which `outli` took its inspiration.  Has many legacy features. 
-- [outorg](https://github.com/alphapapa/outorg): Required by `outshine`, this mode enables editing comment blocks in temporary `org-mode` buffers (the inverse of code-blocks in org).
+- [outorg](https://github.com/alphapapa/outorg): Required by `outshine`, this mode enables editing comment blocks in temporary `org-mode` buffers (the inverse of code-blocks in `org`).
 - See [more related packages for org-like behavior outside of org](https://orgmode.org/worg/org-tutorials/org-outside-org.html). 
