@@ -66,7 +66,7 @@ achieve distinct faces at high depths, you can define new outline faces."
   "Formatting configuration for outli comment headings.
 The configuration is an alist with each element in one of two forms:
 
- (MAJOR-MODE STEM REPEAT-CHAR STYLE NO-BAR)
+ (MAJOR-MODE STEM REPEAT-CHAR [STYLE NO-BAR])
 
 with entries for the first form:
 
@@ -74,17 +74,17 @@ with entries for the first form:
 - initial string STEM
 - REPEAT-CHAR, a character the count of which denotes heading
   depth
-- optional STYLE: If the symbol none, no styling of any kind is
-  applied to headings.  If otherwise non-nil, the stem and repeat
+- optional STYLE, a symbol.  If the symbol none, no styling of any kind
+  is applied to headings.  If otherwise non-nil, the stem and repeat
   character parts of the heading both get identical stem-styling.
-- optional boolean NO-BAR: if non-nil, omit the overline styling
-  for this mode.
+- optional boolean NO-BAR: if non-nil, omit the overline styling for
+  this mode.
 
 or
 
  (MAJOR-MODE . nil)
 
-which will disable outli in any modes derived from this mode.
+which will disable `outli' in any modes derived from this mode.
 
 STEM and REPEAT-CHAR are eval'd if expressions.  To provide a
 default setting for any mode as backup, specify MAJOR-MODE as t.
