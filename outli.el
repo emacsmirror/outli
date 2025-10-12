@@ -35,7 +35,7 @@
 ;; character for comment-based headings and to influence how the
 ;; headings are styled.  Customize `outli-speed-commands' to alter or
 ;; disable speed keys, which work at the beginning of heading lines
-;; only.
+;; only.  Outli inherits heading colors from the `outline-*' faces.
 
 ;;; Code:
 (require 'outline)
@@ -46,6 +46,13 @@
   "Simple comment outlining."
   :tag "Outli"
   :group 'outlines)
+
+(defcustom outli-maximum-depth 8
+  "Maximum depth for outli headers in the buffer.
+Note that `outline-mode' defines only 8 faces by default.  Outli faces
+at higher depth will wrap back around, reusing faces at low depth.  To
+achieve distinct faces at high depths, you can define new outline faces."
+  :type 'natnum)
 
 (defcustom outli-heading-config
   '((emacs-lisp-mode ";;" ?\; t)
@@ -272,63 +279,70 @@ Useful for calling after theme changes."
   (cl-loop for (mode stem _ style nobar) in outli-heading-config
 	   if stem do (outli--setup-faces style nobar mode)))
 
+(defvar outli--max-outline-depth nil)
+
 (defun outli--setup-faces (style nobar mode)
   "Setup outli faces based on the outline faces.
 STYLE, NOBAR, and MODE are as in `outli-fontify-headlines'."
   (let ((style (or style outli-default-style))
 	(nobar (or nobar outli-default-nobar)))
-    (cl-loop for i downfrom 8 to 1
-	     with ot = (unless nobar '(:overline t))
-	     for ol-face = (intern-soft (format "outline-%d" i))
-	     for otl-stem-face = (outli--face-name mode i)
-	     for fg = (face-attribute ol-face :foreground nil t)
-	     for blend = (and outli-blend (outli-fontify-background-blend fg))
-	     for ofg = (unless nobar `(:overline ,fg))
-	     do
-	     (face-spec-set otl-stem-face
-			    (if blend
-				`((t (:background ,blend ,@ofg)))
-			      `((t ,@(and ofg `(,ofg))))))
-	     (unless style
-	       (face-spec-set
-		(outli--face-name mode i 'repeat)
-		`((t (:inherit ,ol-face
-			       ,@(and blend `(:background ,blend)) ,@ot))))))))
+    (cl-loop
+     for i downfrom outli-maximum-depth to 1
+     with ot = (unless nobar '(:overline t))
+     for ol-face = (intern-soft
+		    (format "outline-%d" (1+ (mod (1- i) outli--max-outline-depth))))
+     for otl-stem-face = (outli--face-name mode i)
+     for fg = (face-attribute ol-face :foreground nil t)
+     for blend = (and outli-blend (outli-fontify-background-blend fg))
+     for ofg = (unless nobar `(:overline ,fg))
+     do
+     (face-spec-set otl-stem-face
+		    (if blend
+			`((t (:background ,blend ,@ofg)))
+		      `((t ,@(and ofg `(,ofg))))))
+     (unless style
+       (face-spec-set
+	(outli--face-name mode i 'repeat)
+	`((t (:inherit ,ol-face
+		       ,@(and blend `(:background ,blend)) ,@ot))))))))
 
-(defun outli-fontify-headlines (&optional style nobar mode)
+(defun outli-fontify-headlines (style nobar mode)
   "Calculate and enable font-lock regexps to match headings.
-If STYLE is non-nil, do not style the stem and depth chars
-differently.  If it is the symbol none, omit all styling.  If
-NOBAR is non-nil, omit the overlines.  MODE is the symbol for the
-mode which this styling applies to, or t for the default.  Note
-that STYLE and NOBAR can be specified globally using the
-variables `outli-default-style' and `outli-default-nobar'."
+If STYLE is non-nil, do not style the stem and depth characters
+differently.  If it is the symbol `none', omit all styling.  If NOBAR is
+non-nil, omit the overlines.  MODE is the symbol for the mode which this
+styling applies to, or t for the default.  If STYLE and NOBAR are nil,
+their values will be set using the variables `outli-default-style' and
+`outli-default-nobar'."
   (let ((style (or style outli-default-style))
 	(nobar (or nobar outli-default-nobar)))
     (outli--setup-faces style nobar mode)
     (unless (eq style 'none)
       (font-lock-add-keywords
        nil
-       (setq outli-font-lock-keywords
-	     (cl-loop for i downfrom 8 to 1
-		      for ol-face = (intern-soft (format "outline-%d" i))
-		      for hrx = (rx-to-string
-				 `(and
-				   bol ,@(if outli-allow-indented-headlines '((* space)))
-				   (group (group (literal ,outli-heading-stem)) ; 1=2+3 2 = stem
-					  (group (= ,i ,outli-heading-char)))   ; 3 = repeat
-				   (group ?\s (* nonl) (or ?\n eol))) ; 4 = rest of headline
-				 t)
-		      for header-highlight =
-		      `(4 '(:inherit ,ol-face :extend t
-				     ,@(unless nobar '(:overline t)))
-			  t)
-		      for stem-highlight =
-		      (if (or style (not outli-blend))
-			  `((1 ',(outli--face-name mode i) append)) ; all same
-			`((2 ',(outli--face-name mode i) append)
-			  (3 ',(outli--face-name mode i 'repeat) t)))
-		      collect `(,hrx ,header-highlight ,@stem-highlight))))
+       (setq
+	outli-font-lock-keywords
+	(cl-loop for i downfrom outli-maximum-depth to 1
+		 for ol-face = (intern-soft
+				(format "outline-%d"
+					(1+ (mod (1- i) outli--max-outline-depth))))
+		 for hrx = (rx-to-string
+			    `(and
+			      bol ,@(if outli-allow-indented-headlines '((* space)))
+			      (group (group (literal ,outli-heading-stem)) ; 1=2+3 2 = stem
+				     (group (= ,i ,outli-heading-char))) ; 3 = repeat
+			      (group ?\s (* nonl) (or ?\n eol))) ; 4 = rest of headline
+			    t)
+		 for header-highlight =
+		 `(4 '(:inherit ,ol-face :extend t
+				,@(unless nobar '(:overline t)))
+		     t)
+		 for stem-highlight =
+		 (if (or style (not outli-blend))
+		     `((1 ',(outli--face-name mode i) append)) ; all same
+		   `((2 ',(outli--face-name mode i) append)
+		     (3 ',(outli--face-name mode i 'repeat) t)))
+		 collect `(,hrx ,header-highlight ,@stem-highlight))))
       (mapc (lambda (x) (cl-pushnew x font-lock-extra-managed-props))
 	    `(extend overline ,@(if outli-blend '(background))))
       (font-lock-flush))))
@@ -387,6 +401,10 @@ Based on `org--print-speed-command'."
       (let ((config (seq-find
 		     (lambda (e) (derived-mode-p (car e)))
 		     outli-heading-config)))
+	(setq outli--max-outline-depth
+	      (cl-loop for i downfrom outli-maximum-depth to 1
+		     for ol-face = (intern-soft (format "outline-%d" i))
+		     if (facep ol-face) return i))
 	(if (and config (eq (cdr config) nil))
 	    (setq outli-mode nil)	; Mode explicitly disabled
 	  ;; Speed keys
@@ -413,7 +431,7 @@ Based on `org--print-speed-command'."
 	     outline-heading-end-regexp "\n"
 	     outline-search-function nil)
 	    ;; pre-seed the level alist for efficiency
-	    (cl-loop for level downfrom 8 to 1 do
+	    (cl-loop for level downfrom outli-maximum-depth to 1 do
 		     (push (cons (concat outli-heading-stem
 					 (make-string level outli-heading-char) " ")
 				 level)

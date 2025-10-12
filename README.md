@@ -45,6 +45,16 @@ The custom variable `outli-blend` controls whether a blended background is used 
 
 You can set defaults for the `STYLE` and `NOBAR` properties for all modes, which take effect if these parameters are omitted or `nil` in the `outli-heading-config`; see `outli-default-style` and `outli-default-nobar`. 
 
+## Faces and maximum depth
+
+`outli` inherits the underlying faces (colors) from `outline-mode`.  By default, `outline-mode` only defines 8 faces.  If you'd like headings to go deeper than this, increase `outli-maximum-depth`.  At greater depths, the `outline` face a given `outli` face inherits from will "wrap around".  If you'd like distinct heading faces at high depth, define more `outline` faces, e.g.:
+s
+```elisp
+  (defface outline-9
+    '((t :inherit warning :weight bold))
+    "Level 9.")
+```
+
 ## Speed keys
 Customize `outli-speed-commands` to alter or disable speed keys, which work at the beginning of heading lines only (similar to org speed keys).
 
