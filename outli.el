@@ -272,7 +272,7 @@ Useful for calling after theme changes."
   (cl-loop for (mode stem _ style nobar) in outli-heading-config
 	   if stem do (outli--setup-faces style nobar mode)))
 
-(defun outli--setup-faces (&optional style nobar mode)
+(defun outli--setup-faces (style nobar mode)
   "Setup outli faces based on the outline faces.
 STYLE, NOBAR, and MODE are as in `outli-fontify-headlines'."
   (let ((style (or style outli-default-style))
