@@ -4,7 +4,6 @@
 Simple and stylish comment-based outlines with speed keys for Emacs.
 <img width="1052" alt="image" src="https://github.com/user-attachments/assets/a6e35266-f283-4438-9fcb-c4b9a3d0a6f8">
 
-
 `outli` is a simple Emacs outliner for code, documents, and more which provides hierarchical hide/show, styles your headings, and emulates org-mode navigation and structure editing.  It builds on the built-in `outline-minor-mode` and is simple by design, providing just a few key additional features beyond what outline already offers:
 
 - Configurable heading syntax based on the concept of a `stem` (fixed first characters) and `repeat-char` (the number of which determines a heading's depth).  Example level-two headers include classics such as `;;;;` and `# **`, but anything's possible.
@@ -61,6 +60,14 @@ Customize `outli-speed-commands` to alter or disable speed keys, which work at t
 ## Folding/unfolding automatically when hopping around buffers
 
 Try `reveal-mode`; see below.
+
+# Release information
+
+(Significant releases only.)
+
+- **v0.3**: Support heading depths greater than 8.
+- **v0.2.4**: Released on MELPA
+- **v0.1**: Allow indented headlines
 
 # FAQ
 - **How does this relate to outline-minor-mode?**
