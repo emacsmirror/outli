@@ -91,7 +91,6 @@ default setting for any mode as backup, specify MAJOR-MODE as t.
 Note that ordering is important, as settings from the first
 matching mode are used.  Note that the first MAJOR-MODE from
 which the current mode derives will match."
-  :group 'outli
   :type '(alist :key-type (choice (const :tag "Default" t) (symbol :tag "Major Mode"))
 		:value-type
 		(choice (const :tag "Disable" nil)
@@ -106,19 +105,16 @@ which the current mode derives will match."
 
 (defcustom outli-allow-indented-headlines nil
   "Whether to allow initial space at the beginning of the line."
-  :group  'outli
   :type 'boolean)
   
 (defcustom outli-default-style nil
   "Default STYLE to use, if not set in `outli-heading-config'."
-  :group 'outli
   :type '(choice (const :tag "Use heading-config" nil)
 		 (const :tag "None" none)
 		 (const :tag "Stem Matched" t)))
 
 (defcustom outli-default-nobar nil
   "If set, NOBAR will be implied for all modes."
-  :group 'outli
   :type 'boolean)
 
 (defcustom outli-blend 0.25
@@ -126,7 +122,6 @@ which the current mode derives will match."
 Either nil for no blended background, or a floating point number
 <=1.0, representing the fraction of the heading foreground color
 to blend with the background."
-  :group  'outli
   :type '(choice (const :tag "Disable" nil) float))
 
 (defcustom outli-speed-commands
@@ -166,7 +161,6 @@ An entry that is just a list with a single string will be
 interpreted as a descriptive headline that will be added when
 listing the speed commands in the Help buffer using the `?' speed
 command."
-  :group 'outfin
   :type '(repeat :value ("k" . ignore)
 		 (choice :value ("k" . ignore)
 			 (list :tag "Descriptive Headline" (string :tag "Headline"))
@@ -177,10 +171,10 @@ command."
 				(sexp))))))
 
 (defvar-local outli-heading-stem nil
-  "The initial stem for headings.  Defaults to 2x comment-start.")
+  "The initial stem for headings.  Defaults to 2x `comment-start'.")
 
 (defvar-local outli-heading-char nil
-  "Character used to indicate heading depth.  Defaults to commment-start.")
+  "Character used to indicate heading depth.  Defaults to `commment-start'.")
 
 ;;;; Outline Headings
 (defun outli-heading-regexp ()
